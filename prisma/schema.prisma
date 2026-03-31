@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+// Prisma schema for MongoDB + Food-Order Project
+// Docs: https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"   // Prisma JS client
+}
+
+datasource db {
+  provider = "mongodb"            // MongoDB
+  url      = env("DATABASE_URL")  // URL from .env
+}
+
+// --------------------- MODELS ---------------------
+
+model User {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+}
+
+model Food {
+  id       String  @id @map("_id") @default(auto()) @db.ObjectId
+  title    String
+  price    Int
+  image    String
+  category String
+  rating   Float?
+}
+
+model Order {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  userId    String
+  foods     String[]
+  total     Int
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model Cart {
+  id      String   @id @map("_id") @default(auto()) @db.ObjectId
+  userId  String
+  foods   String[]
+}
