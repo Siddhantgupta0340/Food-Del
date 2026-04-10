@@ -3,84 +3,96 @@ import axios from "axios";
 
 export const StoreContext = createContext(null);
 
-const StoreContextProvider = ( props ) => {
-
+const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const url = "http://localhost:4000";
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [food_list, setFoodList] = useState([]);
 
+  // ✅ ADD
   const addToCart = async (itemId) => {
-    if (!cartItems[itemId]) {
-      setCartItems((prev) => ({ ...prev, [itemId]: 1 }))
-    } else {
-      setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
-    }
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: prev[itemId] ? prev[itemId] + 1 : 1,
+    }));
+
     if (token) {
       await axios.post(
         url + "/api/cart/add",
         { itemId },
-        {
-          headers: { token },
-        },
+        { headers: { token } },
       );
     }
   };
 
+  // ✅ REMOVE
   const removeFromCart = async (itemId) => {
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    setCartItems((prev) => {
+      const updated = { ...prev };
+      if (updated[itemId] > 1) updated[itemId] -= 1;
+      else delete updated[itemId];
+      return updated;
+    });
+
     if (token) {
       await axios.post(
         url + "/api/cart/remove",
         { itemId },
-        {
-          headers: { token }
-        }
+        { headers: { token } },
       );
     }
   };
 
+  // ✅ TOTAL
   const getTotalCartAmount = () => {
-    let totalAmount = 0;
+    let total = 0;
+
     for (const item in cartItems) {
-      if (cartItems[item] > 0) {
-        let itemInfo = food_list.find((product) => product._id === item);
-        totalAmount += itemInfo.price * cartItems[item];
+      const itemInfo = food_list.find(
+        (product) => product._id.toString() === item.toString(),
+      );
+
+      if (itemInfo) {
+        total += itemInfo.price * cartItems[item];
       }
     }
-    return totalAmount;
+
+    return total;
   };
 
+  // ✅ FETCH FOOD
   const fetchFoodList = async () => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
   };
 
+  // ✅ LOAD CART
   const loadCartData = async (token) => {
     const response = await axios.post(
       url + "/api/cart/get",
       {},
-      {
-        headers: { token },
-      },
+      { headers: { token } },
     );
-    setCartItems(response.data.cartData);
+    setCartItems(response.data.cartData || {});
   };
+
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
-      if (localStorage.getItem("token")) {
-        setToken(localStorage.getItem("token"));
-        await loadCartData(localStorage.getItem("token"));
+
+      const savedToken = localStorage.getItem("token");
+      if (savedToken) {
+        setToken(savedToken);
+        await loadCartData(savedToken);
       }
     }
+
     loadData();
   }, []);
 
   const contextValue = {
     food_list,
     cartItems,
-    setCartItems,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
