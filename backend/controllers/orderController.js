@@ -14,19 +14,19 @@ const placeOrder = async (req, res) => {
   try {
     const { items, amount, address } = req.body;
 
-    // ✅ SAVE ORDER IN DB
     const newOrder = new orderModel({
       userId: req.userId,
       items,
       amount,
       address,
+      status: "Pending",
+      paymentStatus: "Pending",
     });
 
     await newOrder.save();
 
-    // ✅ CREATE RAZORPAY ORDER
     const razorpayOrder = await razorpay.orders.create({
-      amount: amount * 100, // paise
+      amount: amount * 100,
       currency: "INR",
       receipt: newOrder._id.toString(),
     });
@@ -45,7 +45,6 @@ const placeOrder = async (req, res) => {
 };
 
 // 🔥 VERIFY PAYMENT
-
 const verifyOrder = async (req, res) => {
   try {
     const {
@@ -54,7 +53,7 @@ const verifyOrder = async (req, res) => {
       razorpay_signature,
       orderId,
     } = req.body;
-    // ✅ CREATE SIGNATURE
+
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSignature = crypto
@@ -62,21 +61,25 @@ const verifyOrder = async (req, res) => {
       .update(body)
       .digest("hex");
 
-    // ❌ IF NOT MATCH
+    // ❌ PAYMENT FAILED
     if (expectedSignature !== razorpay_signature) {
+      await orderModel.findByIdAndUpdate(orderId, {
+        paymentStatus: "Failed",
+      });
+
       return res.json({
         success: false,
-        message: "Invalid signature ❌",
+        message: "Payment Failed ❌",
       });
     }
 
-    // ✅ UPDATE ORDER
+    // ✅ PAYMENT SUCCESS
     await orderModel.findByIdAndUpdate(orderId, {
       paymentId: razorpay_payment_id,
-      status: "Paid",
+      paymentStatus: "Paid",
+      status: "Food Processing",
     });
 
-    // ✅ CLEAR CART
     await userModel.findByIdAndUpdate(req.userId, {
       cartData: {},
     });
@@ -88,15 +91,41 @@ const verifyOrder = async (req, res) => {
   }
 };
 
-//user  order  for frontend
+// ✅ USER ORDERS
 const userOrders = async (req, res) => {
   try {
-    const order = await orderModel.find({ userId: req.userId });
-    res.json({ success: true, data: order });
+    const orders = await orderModel.find({ userId: req.userId });
+    res.json({ success: true, data: orders });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "error" });
+    res.json({ success: false });
   }
 };
 
-export { placeOrder, verifyOrder, userOrders };
+// ✅ ADMIN ORDERS
+const listOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.find({});
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.json({ success: false });
+  }
+};
+
+// ✅ UPDATE STATUS (ADMIN)
+const updateStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true },
+    );
+
+    res.json({ success: true, data: updatedOrder });
+  } catch (error) {
+    res.json({ success: false });
+  }
+};
+
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus };

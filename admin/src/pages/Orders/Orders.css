@@ -1,0 +1,124 @@
+/* FULL PAGE BACKGROUND */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f6f6f6;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #f6f6f6;
+}
+
+/* PAGE */
+.order {
+  padding: 30px 50px;
+  min-height: 100vh;
+}
+
+/* TITLE */
+.order h3 {
+  font-size: 22px;
+  margin-bottom: 25px;
+  color: #444;
+}
+
+/* LIST */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* CARD */
+.order-item {
+  display: grid;
+  grid-template-columns: 60px 3fr 1fr 1fr 1.5fr;
+  align-items: flex-start;
+
+  gap: 20px;
+  padding: 20px;
+
+  background: #fff;
+  border: 1px solid #e2b4a4;
+  border-radius: 6px;
+}
+
+/* IMAGE */
+.order-item img {
+  width: 50px;
+}
+
+/* LEFT SECTION */
+.order-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* FOOD */
+.order-item-food {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* NAME */
+.order-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* ADDRESS */
+.order-item-address p {
+  margin: 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* PHONE */
+.order-item-phone {
+  font-size: 13px;
+  color: #777;
+}
+
+/* RIGHT SIDE TEXT */
+.order-items-count,
+.order-amount {
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+}
+
+/* DROPDOWN */
+.order-item select {
+  padding: 8px;
+  border: 1px solid #e2b4a4;
+  background-color: #ffe8e4;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .order {
+    padding: 20px;
+  }
+
+  .order-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .order-items-count,
+  .order-amount {
+    text-align: left;
+  }
+
+  .order-item select {
+    width: 100%;
+  }
+}

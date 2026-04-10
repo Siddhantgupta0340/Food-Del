@@ -5,9 +5,16 @@ const orderSchema = new mongoose.Schema({
   items: { type: Array, required: true },
   amount: { type: Number, required: true },
   address: { type: Object, required: true },
+
+  // ✅ ORDER STATUS (ADMIN CONTROL)
   status: { type: String, default: "Pending" },
+
+  // ✅ PAYMENT STATUS (SYSTEM CONTROL)
+  paymentStatus: { type: String, default: "Pending" },
+
   Date: { type: Date, default: Date.now },
-  paymentId: { type: String }, 
+
+  paymentId: { type: String },
 });
 
 const orderModel =

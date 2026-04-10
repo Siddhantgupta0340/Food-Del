@@ -1,91 +1,235 @@
+/* 🔥 PAGE BACKGROUND */
 .my-orders {
-  margin: 60px 0;
-  padding: 0 20px;
+  padding: 40px 20px;
+  background: #f5f6fa;
+  min-height: 100vh;
 }
 
-/* ✅ FIX: space between boxes */
-.my-orders .container {
+/* 🔥 TITLE */
+.my-orders h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+/* 🔥 CONTAINER */
+.orders-container {
   display: flex;
   flex-direction: column;
-  gap: 25px; /* spacing between each order box */
-  margin-top: 30px;
+  gap: 20px;
 }
 
-/* ✅ CARD STYLE */
-.my-orders-order {
+/* 🔥 CARD DESIGN */
+.order-card {
   display: grid;
-  grid-template-columns: 0.5fr 2fr 1fr 1fr 2fr 1fr;
+  grid-template-columns: 70px 2.5fr 1fr 1fr 150px;
   align-items: center;
   gap: 20px;
-  font-size: 14px;
-  padding: 18px 25px;
-  color: #333;
 
-  /* 🔥 BLACK BORDER */
-  border: 1px solid #000;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
 
-  /* 🔥 MODERN LOOK */
-  border-radius: 10px;
-  background-color: #fff;
-
-  /* 🔥 SHADOW */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eaeaea;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 
   transition: 0.3s ease;
 }
 
-/* ✅ HOVER EFFECT */
-.my-orders-order:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+/* 🔥 HOVER EFFECT */
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* IMAGE */
-.my-orders-order img {
-  width: 50px;
+/* 🔥 IMAGE */
+.order-card img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
 }
 
-/* STATUS DOT */
-.my-orders-order p span {
-  color: black; /* 🔥 changed from tomato */
+/* 🔥 DETAILS SECTION */
+.order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* TEXT */
-.my-orders-order p b {
+/* 🔥 ITEMS TEXT */
+.order-items {
+  font-size: 14px;
+  color: #111;
   font-weight: 500;
-  color: #222;
 }
 
-/* BUTTON */
-.my-orders-order button {
-  border: none;
-  padding: 10px 0;
-  border-radius: 6px;
+/* 🔥 ORDER STATUS */
+.order-status {
+  font-size: 13px;
+  font-weight: 500;
+}
 
-  /* 🔥 CLEAN BUTTON */
-  background-color: black;
+/* 🔥 PAYMENT STATUS */
+.payment-status {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* 🔥 STATUS COLORS */
+.status-Pending {
+  color: #ff9800;
+}
+
+.status-Food\ Processing {
+  color: #2196f3;
+}
+
+.status-Out\ for\ Delivery {
+  color: #9c27b0;
+}
+
+.status-Delivered {
+  color: #4caf50;
+}
+
+/* 🔥 PAYMENT COLORS */
+.pay-Pending {
+  color: #ff9800;
+}
+
+.pay-Paid {
+  color: #4caf50;
+}
+
+.pay-Failed {
+  color: #f44336;
+}
+
+/* 🔥 PRICE */
+.order-price {
+  font-weight: 600;
+  font-size: 15px;
+  color: #000;
+}
+
+/* 🔥 ITEM COUNT */
+.order-count {
+  font-size: 13px;
+  color: #555;
+}
+
+/* 🔥 BUTTON */
+.track-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+
+  background: #000;
   color: #fff;
+
+  font-size: 13px;
+  font-weight: 500;
 
   cursor: pointer;
   transition: 0.3s;
 }
 
-/* BUTTON HOVER */
-.my-orders-order button:hover {
-  background-color: #333;
+/* 🔥 BUTTON HOVER */
+.track-btn:hover {
+  background: #222;
+  transform: scale(1.05);
 }
 
-/* ✅ RESPONSIVE */
+/* 🔥 EMPTY TEXT */
+.no-orders {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+  font-size: 16px;
+}
+
+/* 🔥 RESPONSIVE DESIGN */
 @media (max-width: 900px) {
-  .my-orders-order {
-    grid-template-columns: 1fr 2fr 1fr;
-    row-gap: 8px;
-    font-size: 12px;
-    padding: 15px;
+  .order-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    text-align: left;
   }
 
-  .my-orders-order button {
-    font-size: 11px;
-    padding: 8px;
+  .order-card img {
+    width: 45px;
   }
+
+  .track-btn {
+    width: 100%;
+  }
+}
+
+/* 🔥 TRACK POPUP */
+.track-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.track-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  text-align: center;
+}
+
+/* 🔥 STEPS */
+.track-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.5;
+}
+
+.step span {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* ACTIVE STEP */
+.step.active {
+  opacity: 1;
+}
+
+.step.active span {
+  background: green;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  padding: 8px 15px;
+  border: none;
+  background: black;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
 }
