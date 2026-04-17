@@ -11,27 +11,30 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ✅ CORS FIX (LOCAL + PRODUCTION)
+// ✅ FINAL CORS FIX (WORKS FOR LOCAL + DEPLOYED)
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://food-del-frontend-3jtq.onrender.com", // 🔥 ADD YOUR FRONTEND
-  "https://food-del-admin.onrender.com", // 🔥 ADD YOUR ADMIN (if deployed)
+  "https://food-del-frontend-6zb3.onrender.com", // ✅ YOUR CURRENT FRONTEND (IMPORTANT)
+  "https://food-del-frontend-3jtq.onrender.com", // (old one - optional)
+  "https://food-del-admin.onrender.com",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // ✅ Allow Postman / mobile apps / no-origin requests
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+        callback(null, true);
       } else {
-        return callback(new Error("CORS not allowed: " + origin));
+        console.log("❌ Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
-  }),
+  })
 );
 
 // ✅ MIDDLEWARE
@@ -52,9 +55,9 @@ app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });
 
-// ✅ ERROR HANDLING
+// ✅ ERROR HANDLING (IMPORTANT FOR DEBUGGING)
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
+  console.error("🔥 Server Error:", err.message);
   res.status(500).json({
     success: false,
     message: err.message || "Something went wrong",
@@ -63,5 +66,5 @@ app.use((err, req, res, next) => {
 
 // ✅ SERVER START
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`✅ Server is running on port ${port}`);
 });
