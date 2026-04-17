@@ -86,7 +86,7 @@ const Add = ({ url }) => {
             <p>Product category</p>
             <select onChange={onChangeHandler} name="category">
               <option value="Salad">Salad</option>
-              <option value="Roll">Roll</option>
+              <option value="Rolls">Roll</option>
               <option value="Deserts">Deserts</option>
               <option value="Sandwich">Sandwich</option>
               <option value="Cake">Cake</option>

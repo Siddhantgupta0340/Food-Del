@@ -3,39 +3,68 @@ import "./LoginPopup.css";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/storeContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const LoginPop = ({ setShowLogin }) => {
-  const { url ,  setToken   } = useContext(StoreContext);
+  const { url, setToken, fetchUser } = useContext(StoreContext);
 
   const [currState, setCurrState] = useState("Login");
+  const [loading, setLoading] = useState(false);
+
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
   const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setData((data) => ({ ...data, [name]: value }));
+    const { name, value } = event.target;
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const onLogin = async (event) => {
-    event.preventDefault()
-    let newUrl = url;
-    if(currState==="Login"){
-      newUrl += "/api/user/login"
-    }
-    else{
-      newUrl += "/api/user/register"  
-    }
-    const response = await axios.post(newUrl, data);
-    if(response.data.success){
-      setToken(response.data.token);
-      localStorage.setItem("token",response.data.token);
-      setShowLogin(false);
-    }
-    else{
-      alert(response.data.message);
+    event.preventDefault();
+
+    try {
+      setLoading(true);
+
+      let newUrl =
+        currState === "Login"
+          ? `${url}/api/user/login`
+          : `${url}/api/user/register`;
+
+      const response = await axios.post(newUrl, data);
+
+      if (response.data.success) {
+        // ✅ SAVE TOKEN
+        localStorage.setItem("token", response.data.token);
+
+        // ✅ UPDATE CONTEXT
+        setToken(response.data.token);
+
+        // 🔥 FETCH USER DATA (IMPORTANT FIX)
+        await fetchUser(response.data.token);
+
+        toast.success(
+          currState === "Login" ? "Login Successful 🎉" : "Account Created 🎉",
+        );
+
+        // RESET FORM
+        setData({
+          name: "",
+          email: "",
+          password: "",
+        });
+
+        setShowLogin(false);
+      } else {
+        toast.error(response.data.message || "Something went wrong");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server Error ❌");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,10 +79,9 @@ const LoginPop = ({ setShowLogin }) => {
             alt=""
           />
         </div>
+
         <div className="login-popup-inputs">
-          {currState === "Login" ? (
-            <></>
-          ) : (
+          {currState === "Sign Up" && (
             <input
               name="name"
               onChange={onChangeHandler}
@@ -63,6 +91,7 @@ const LoginPop = ({ setShowLogin }) => {
               required
             />
           )}
+
           <input
             name="email"
             onChange={onChangeHandler}
@@ -71,26 +100,34 @@ const LoginPop = ({ setShowLogin }) => {
             placeholder="Your email"
             required
           />
+
           <input
             name="password"
             onChange={onChangeHandler}
             value={data.password}
             type="password"
-            placeholder="password"
+            placeholder="Password"
             required
           />
         </div>
-        <button type="submit">
-          {currState === "Sign Up" ? "Create account" : "Login"}
+
+        <button type="submit" disabled={loading}>
+          {loading
+            ? "Please wait..."
+            : currState === "Sign Up"
+              ? "Create Account"
+              : "Login"}
         </button>
+
         <div className="login-popup-condition">
           <input type="checkbox" required />
-          <p>By continuing, i agree to the terms of use privacy policy. </p>
+          <p>By continuing, I agree to the terms & privacy policy.</p>
         </div>
+
         {currState === "Login" ? (
           <p>
             Create a new account?{" "}
-            <span onClick={() => setCurrState("Sign Up")}>Click here</span>{" "}
+            <span onClick={() => setCurrState("Sign Up")}>Click here</span>
           </p>
         ) : (
           <p>

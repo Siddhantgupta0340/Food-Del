@@ -1,59 +1,86 @@
 import foodModel from "../models/foodModel.js";
 import fs from "fs";
 
-//add new food item
-
+// ✅ ADD FOOD
 const addFood = async (req, res) => {
-  let image_filename = `${req.file.filename}`;
-
-  const food = new foodModel({
-    name: req.body.name,
-    description: req.body.description,
-    price: req.body.price,
-    category: req.body.category,
-    image: image_filename,
-  });
   try {
+    let image_filename = `${req.file.filename}`;
+
+    const food = new foodModel({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      image: image_filename,
+    });
+
     await food.save();
-    res
-      .status(200)
-      .json({ success: true, message: "Food item added successfully" });
+    res.json({ success: true, message: "Food added" });
   } catch (error) {
-    console.error("Error adding food item:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to add food item" });
+    console.log(error);
+    res.json({ success: false, message: "Error adding food" });
   }
 };
 
-//all  food  list
+// ✅ LIST FOOD
 const listFood = async (req, res) => {
   try {
     const food = await foodModel.find({});
-    res.status(200).json({ success: true, data: food });
+    res.json({ success: true, data: food });
   } catch (error) {
-    console.error("Error fetching food items:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to fetch food items" });
-  }
-};
-//remove food item
-const removeFood = async (req, res) => {
-  try {
-    const food = await foodModel.findById(req.body.id);
-    fs.unlink(`uploads/${food.image}`, () => {});
-    
-    await foodModel.findByIdAndDelete(req.body.id);
-    res
-      .status(200)
-      .json({ success: true, message: "Food item removed successfully" });
-  } catch (error) {
-    console.error("Error removing food item:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to remove food item" });
+    res.json({ success: false, message: "Error fetching" });
   }
 };
 
-export { addFood, listFood, removeFood };
+// ✅ REMOVE FOOD
+const removeFood = async (req, res) => {
+  try {
+    const food = await foodModel.findById(req.body.id);
+
+    if (food?.image) {
+      fs.unlink(`uploads/${food.image}`, () => {});
+    }
+
+    await foodModel.findByIdAndDelete(req.body.id);
+    res.json({ success: true, message: "Deleted" });
+  } catch (error) {
+    res.json({ success: false, message: "Error deleting" });
+  }
+};
+
+// ✅ GET SINGLE FOOD (NEW)
+const singleFood = async (req, res) => {
+  try {
+    const food = await foodModel.findById(req.params.id);
+    res.json({ success: true, data: food });
+  } catch (error) {
+    res.json({ success: false, message: "Error fetching item" });
+  }
+};
+
+// ✅ UPDATE FOOD (NEW)
+const updateFood = async (req, res) => {
+  try {
+    const { id, name, description, price, category } = req.body;
+
+    let updateData = { name, description, price, category };
+
+    if (req.file) {
+      updateData.image = req.file.filename;
+
+      const oldFood = await foodModel.findById(id);
+      if (oldFood?.image) {
+        fs.unlink(`uploads/${oldFood.image}`, () => {});
+      }
+    }
+
+    await foodModel.findByIdAndUpdate(id, updateData);
+
+    res.json({ success: true, message: "Updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error updating" });
+  }
+};
+
+export { addFood, listFood, removeFood, updateFood, singleFood };

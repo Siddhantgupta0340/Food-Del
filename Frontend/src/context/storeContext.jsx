@@ -6,10 +6,32 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const url = "http://localhost:4000";
+
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [food_list, setFoodList] = useState([]);
 
-  // ✅ ADD
+  // 🔥 USER STATE
+  const [user, setUser] = useState(null);
+
+  // 🔥 FETCH USER
+  const fetchUser = async (token) => {
+    try {
+      const res = await axios.post(
+        url + "/api/user/profile",
+        {},
+        { headers: { token } },
+      );
+
+      if (res.data.success) {
+        setUser(res.data.data);
+      }
+    } catch (error) {
+      console.log("User fetch error", error);
+    }
+  };
+
+  // ================= CART =================
+
   const addToCart = async (itemId) => {
     setCartItems((prev) => ({
       ...prev,
@@ -25,7 +47,6 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  // ✅ REMOVE
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => {
       const updated = { ...prev };
@@ -43,7 +64,6 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  // ✅ TOTAL
   const getTotalCartAmount = () => {
     let total = 0;
 
@@ -60,13 +80,13 @@ const StoreContextProvider = (props) => {
     return total;
   };
 
-  // ✅ FETCH FOOD
+  // ================= FETCH =================
+
   const fetchFoodList = async () => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
   };
 
-  // ✅ LOAD CART
   const loadCartData = async (token) => {
     const response = await axios.post(
       url + "/api/cart/get",
@@ -81,9 +101,11 @@ const StoreContextProvider = (props) => {
       await fetchFoodList();
 
       const savedToken = localStorage.getItem("token");
+
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
+        await fetchUser(savedToken); // 🔥 IMPORTANT
       }
     }
 
@@ -99,6 +121,9 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    user,
+    setUser,
+    fetchUser, // 🔥 EXPORT
   };
 
   return (

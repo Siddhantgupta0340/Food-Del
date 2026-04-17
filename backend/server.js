@@ -1,38 +1,63 @@
-import express from 'express';
-import cors from 'cors';
-import 'dotenv/config.js';
-import { connectDB } from './config/db.js';
-import foodRouter from './routes/foodRoute.js';
-import userRouter from './routes/userRoute.js';
-import cartRouter from './routes/cartRoute.js';
-import orderRouter from './routes/orderRoute.js';
-//app configuration
+import express from "express";
+import cors from "cors";
+import "dotenv/config.js";
+
+import { connectDB } from "./config/db.js";
+import foodRouter from "./routes/foodRoute.js";
+import userRouter from "./routes/userRoute.js";
+import cartRouter from "./routes/cartRoute.js";
+import orderRouter from "./routes/orderRoute.js";
+
 const app = express();
 const port = 4000;
 
-//middlewares
-app.use(cors());
+// ✅ CORS FIX (ALLOW MULTIPLE ORIGINS)
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps / postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS not allowed"));
+      }
+    },
+    credentials: true,
+  }),
+);
+
+// ✅ MIDDLEWARE
 app.use(express.json());
 
-//database connection
+// ✅ DATABASE CONNECTION
 connectDB();
 
-//routes
-app.use('/api/food',foodRouter);
-app.use('/images', express.static('uploads')); // Serve static files from the "uploads" directory
-app.use('/api/user',userRouter);
-app.use('/api/cart',cartRouter);
-app.use('/api/order', orderRouter);
+// ✅ ROUTES
+app.use("/api/food", foodRouter);
+app.use("/images", express.static("uploads"));
+app.use("/api/user", userRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
 
-
-//api endpoints
-app.get('/', (req, res) => {
-    res.send('API is running');
+// ✅ TEST API
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
 });
 
-//server setup
+// ✅ ERROR HANDLING
+app.use((err, req, res, next) => {
+  console.error("Error:", err.message);
+  res.status(500).json({
+    success: false,
+    message: err.message || "Something went wrong",
+  });
+});
+
+// ✅ SERVER START
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
-
-//mongodb+srv://siddhantgupta0304_db_user:sid0304@cluster0.0tjim0b.mongodb.net/?
