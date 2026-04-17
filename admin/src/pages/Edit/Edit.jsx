@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 const Edit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const url = "http://localhost:4000";
+  const url = "https://food-del-backend-9hm2.onrender.com";
 
   const [data, setData] = useState({
     name: "",

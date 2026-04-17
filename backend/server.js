@@ -9,21 +9,25 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
-// ✅ CORS FIX (ALLOW MULTIPLE ORIGINS)
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+// ✅ CORS FIX (LOCAL + PRODUCTION)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://food-del-frontend-3jtq.onrender.com", // 🔥 ADD YOUR FRONTEND
+  "https://food-del-admin.onrender.com", // 🔥 ADD YOUR ADMIN (if deployed)
+];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps / postman)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
-        return callback(new Error("CORS not allowed"));
+        return callback(new Error("CORS not allowed: " + origin));
       }
     },
     credentials: true,

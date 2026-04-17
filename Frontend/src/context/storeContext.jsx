@@ -5,15 +5,15 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "https://food-del-backend-ic78.onrender.com";
+
+  // ✅ FINAL BACKEND URL
+  const url = "https://food-del-backend-9hm2.onrender.com";
 
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [food_list, setFoodList] = useState([]);
 
-  // 🔥 USER STATE
   const [user, setUser] = useState(null);
 
-  // 🔥 FETCH USER
   const fetchUser = async (token) => {
     try {
       const res = await axios.post(
@@ -29,8 +29,6 @@ const StoreContextProvider = (props) => {
       console.log("User fetch error", error);
     }
   };
-
-  // ================= CART =================
 
   const addToCart = async (itemId) => {
     setCartItems((prev) => ({
@@ -80,8 +78,6 @@ const StoreContextProvider = (props) => {
     return total;
   };
 
-  // ================= FETCH =================
-
   const fetchFoodList = async () => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
@@ -105,7 +101,7 @@ const StoreContextProvider = (props) => {
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
-        await fetchUser(savedToken); // 🔥 IMPORTANT
+        await fetchUser(savedToken);
       }
     }
 
@@ -123,7 +119,7 @@ const StoreContextProvider = (props) => {
     setToken,
     user,
     setUser,
-    fetchUser, // 🔥 EXPORT
+    fetchUser,
   };
 
   return (
