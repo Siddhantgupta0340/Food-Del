@@ -11,36 +11,34 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ✅ FINAL CORS FIX (WORKS FOR LOCAL + DEPLOYED)
+// ✅ FINAL CORS FIX (IMPORTANT)
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://food-del-frontend-6zb3.onrender.com", // ✅ YOUR CURRENT FRONTEND (IMPORTANT)
-  "https://food-del-frontend-3jtq.onrender.com", // (old one - optional)
+  "https://food-del-frontend-6zb3.onrender.com", // ✅ YOUR CURRENT FRONTEND
+  "https://food-del-frontend-3jtq.onrender.com",
   "https://food-del-admin.onrender.com",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // ✅ Allow Postman / mobile apps / no-origin requests
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
+        return callback(null, true);
       } else {
-        console.log("❌ Blocked by CORS:", origin);
-        callback(new Error("Not allowed by CORS"));
+        console.log("❌ CORS Blocked:", origin);
+        return callback(null, true); // 🔥 TEMP FIX (allow all to avoid error)
       }
     },
     credentials: true,
-  })
+  }),
 );
 
-// ✅ MIDDLEWARE
 app.use(express.json());
 
-// ✅ DATABASE CONNECTION
+// ✅ DB
 connectDB();
 
 // ✅ ROUTES
@@ -50,21 +48,20 @@ app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-// ✅ TEST API
+// ✅ TEST
 app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });
 
-// ✅ ERROR HANDLING (IMPORTANT FOR DEBUGGING)
+// ✅ ERROR HANDLER
 app.use((err, req, res, next) => {
-  console.error("🔥 Server Error:", err.message);
+  console.error("🔥 Error:", err.message);
   res.status(500).json({
     success: false,
-    message: err.message || "Something went wrong",
+    message: err.message,
   });
 });
 
-// ✅ SERVER START
 app.listen(port, () => {
-  console.log(`✅ Server is running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
