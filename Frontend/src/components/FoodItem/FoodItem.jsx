@@ -8,7 +8,8 @@ const FoodItem = ({ id, name, price, description, image }) => {
 
   return (
     <div className="food-item">
-      <img src={url + "/images/" + image} alt={name} />
+      {/* ✅ FIXED IMAGE */}
+      <img src={`${url}/images/${image?.replace(/ /g, "%20")}`} alt={name} />
 
       <div className="food-item-info">
         <h3>{name}</h3>
@@ -18,10 +19,8 @@ const FoodItem = ({ id, name, price, description, image }) => {
           <span>₹{price}</span>
 
           {!cartItems[id] ? (
-            // 👉 ADD BUTTON
             <button onClick={() => addToCart(id)}>Add</button>
           ) : (
-            // 👉 QUANTITY CONTROLS
             <div className="food-item-counter">
               <button onClick={() => removeFromCart(id)}>-</button>
               <span>{cartItems[id]}</span>

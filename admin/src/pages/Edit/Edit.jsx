@@ -17,7 +17,7 @@ const Edit = () => {
 
   const [image, setImage] = useState(null);
 
-  // ✅ Categories (FIXED)
+  // ✅ Categories
   const categories = [
     "Salad",
     "Rolls",
@@ -38,7 +38,7 @@ const Edit = () => {
           setData(res.data.data);
         }
       } catch (error) {
-        console.log(error);
+        console.log("Fetch error:", error);
       }
     };
     fetchData();
@@ -74,7 +74,7 @@ const Edit = () => {
         alert("❌ Update Failed");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Update error:", error);
       alert("Server Error");
     }
   };
@@ -84,7 +84,7 @@ const Edit = () => {
       <form className="flex-col" onSubmit={onSubmitHandler}>
         <h2>Edit Food Item</h2>
 
-        {/* IMAGE PREVIEW */}
+        {/* ✅ IMAGE PREVIEW FIXED */}
         <div className="add-img-upload flex-col">
           <p>Upload Image</p>
           <label htmlFor="image">
@@ -92,12 +92,13 @@ const Edit = () => {
               src={
                 image
                   ? URL.createObjectURL(image)
-                  : `${url}/images/${data.image}`
+                  : `${url}/images/${data.image?.replace(/ /g, "%20")}`
               }
-              alt=""
+              alt="preview"
               style={{ width: "120px", borderRadius: "10px" }}
             />
           </label>
+
           <input
             type="file"
             id="image"
@@ -128,7 +129,6 @@ const Edit = () => {
 
         {/* CATEGORY + PRICE */}
         <div className="add-category-price">
-          {/* CATEGORY */}
           <select
             name="category"
             value={data.category}
@@ -141,7 +141,6 @@ const Edit = () => {
             ))}
           </select>
 
-          {/* PRICE */}
           <input
             type="number"
             name="price"

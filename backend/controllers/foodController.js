@@ -4,7 +4,8 @@ import fs from "fs";
 // ✅ ADD FOOD
 const addFood = async (req, res) => {
   try {
-    let image_filename = `${req.file.filename}`;
+    // 🔥 REMOVE SPACE FROM IMAGE NAME
+    let image_filename = req.file.filename.replace(/ /g, "_");
 
     const food = new foodModel({
       name: req.body.name,
@@ -48,7 +49,7 @@ const removeFood = async (req, res) => {
   }
 };
 
-// ✅ GET SINGLE FOOD (NEW)
+// ✅ SINGLE FOOD
 const singleFood = async (req, res) => {
   try {
     const food = await foodModel.findById(req.params.id);
@@ -58,7 +59,7 @@ const singleFood = async (req, res) => {
   }
 };
 
-// ✅ UPDATE FOOD (NEW)
+// ✅ UPDATE FOOD
 const updateFood = async (req, res) => {
   try {
     const { id, name, description, price, category } = req.body;
@@ -66,7 +67,8 @@ const updateFood = async (req, res) => {
     let updateData = { name, description, price, category };
 
     if (req.file) {
-      updateData.image = req.file.filename;
+      let newImage = req.file.filename.replace(/ /g, "_");
+      updateData.image = newImage;
 
       const oldFood = await foodModel.findById(id);
       if (oldFood?.image) {

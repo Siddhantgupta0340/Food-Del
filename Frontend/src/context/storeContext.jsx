@@ -78,10 +78,20 @@ const StoreContextProvider = (props) => {
     return total;
   };
 
-  const fetchFoodList = async () => {
+ const fetchFoodList = async () => {
+  try {
     const response = await axios.get(url + "/api/food/list");
-    setFoodList(response.data.data);
-  };
+
+    if (response.data.success) {
+      setFoodList(response.data.data);
+    } else {
+      setFoodList([]);
+    }
+  } catch (error) {
+    console.log("❌ Food fetch error:", error);
+    setFoodList([]);
+  }
+};
 
   const loadCartData = async (token) => {
     const response = await axios.post(
