@@ -3,13 +3,12 @@ import "./FoodItem.css";
 import { StoreContext } from "../../context/storeContext";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItems, addToCart, removeFromCart, url } =
-    useContext(StoreContext);
+  const { cartItems, addToCart, removeFromCart } = useContext(StoreContext);
 
   return (
     <div className="food-item">
-      {/* ✅ FIXED IMAGE */}
-      <img src={`${url}/images/${image?.replace(/ /g, "%20")}`} alt={name} />
+      {/* ✅ CLOUDINARY IMAGE (NO URL CONCAT) */}
+      <img src={image} alt={name} />
 
       <div className="food-item-info">
         <h3>{name}</h3>

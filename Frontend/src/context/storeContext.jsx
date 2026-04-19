@@ -6,14 +6,14 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
 
-  // ✅ FINAL BACKEND URL
+  // ✅ BACKEND URL (ONLY FOR API CALLS)
   const url = "https://food-del-backend-9hm2.onrender.com";
 
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [food_list, setFoodList] = useState([]);
-
   const [user, setUser] = useState(null);
 
+  // ✅ FETCH USER
   const fetchUser = async (token) => {
     try {
       const res = await axios.post(
@@ -30,6 +30,7 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  // ✅ ADD TO CART
   const addToCart = async (itemId) => {
     setCartItems((prev) => ({
       ...prev,
@@ -45,6 +46,7 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  // ✅ REMOVE FROM CART
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => {
       const updated = { ...prev };
@@ -62,6 +64,7 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  // ✅ TOTAL PRICE
   const getTotalCartAmount = () => {
     let total = 0;
 
@@ -78,30 +81,38 @@ const StoreContextProvider = (props) => {
     return total;
   };
 
- const fetchFoodList = async () => {
-  try {
-    const response = await axios.get(url + "/api/food/list");
+  // ✅ FETCH FOOD LIST (SAFE VERSION)
+  const fetchFoodList = async () => {
+    try {
+      const response = await axios.get(url + "/api/food/list");
 
-    if (response.data.success) {
-      setFoodList(response.data.data);
-    } else {
+      if (response.data.success) {
+        setFoodList(response.data.data);
+      } else {
+        setFoodList([]);
+      }
+    } catch (error) {
+      console.log("❌ Food fetch error:", error);
       setFoodList([]);
     }
-  } catch (error) {
-    console.log("❌ Food fetch error:", error);
-    setFoodList([]);
-  }
-};
-
-  const loadCartData = async (token) => {
-    const response = await axios.post(
-      url + "/api/cart/get",
-      {},
-      { headers: { token } },
-    );
-    setCartItems(response.data.cartData || {});
   };
 
+  // ✅ LOAD CART
+  const loadCartData = async (token) => {
+    try {
+      const response = await axios.post(
+        url + "/api/cart/get",
+        {},
+        { headers: { token } },
+      );
+
+      setCartItems(response.data.cartData || {});
+    } catch (error) {
+      console.log("Cart load error:", error);
+    }
+  };
+
+  // ✅ INITIAL LOAD
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
@@ -124,7 +135,7 @@ const StoreContextProvider = (props) => {
     addToCart,
     removeFromCart,
     getTotalCartAmount,
-    url,
+    url, // ✅ still used for API calls only
     token,
     setToken,
     user,

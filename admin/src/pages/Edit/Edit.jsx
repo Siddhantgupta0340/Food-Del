@@ -17,7 +17,6 @@ const Edit = () => {
 
   const [image, setImage] = useState(null);
 
-  // ✅ Categories
   const categories = [
     "Salad",
     "Rolls",
@@ -29,7 +28,7 @@ const Edit = () => {
     "Noodles",
   ];
 
-  // ✅ Fetch single food
+  // ✅ FETCH FOOD
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,12 +43,10 @@ const Edit = () => {
     fetchData();
   }, [id]);
 
-  // ✅ Handle input change
   const onChangeHandler = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  // ✅ Submit update
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
@@ -84,15 +81,14 @@ const Edit = () => {
       <form className="flex-col" onSubmit={onSubmitHandler}>
         <h2>Edit Food Item</h2>
 
-        {/* ✅ IMAGE PREVIEW FIXED */}
+        {/* ✅ FINAL IMAGE PREVIEW */}
         <div className="add-img-upload flex-col">
           <p>Upload Image</p>
+
           <label htmlFor="image">
             <img
               src={
-                image
-                  ? URL.createObjectURL(image)
-                  : `${url}/images/${data.image?.replace(/ /g, "%20")}`
+                image ? URL.createObjectURL(image) : data.image // ✅ CLOUDINARY URL
               }
               alt="preview"
               style={{ width: "120px", borderRadius: "10px" }}
@@ -151,7 +147,6 @@ const Edit = () => {
           />
         </div>
 
-        {/* BUTTON */}
         <button type="submit" className="add-btn">
           Update Food
         </button>
